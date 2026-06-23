@@ -70,7 +70,7 @@ def index():
                     fixed_code = None
 
             except Exception as e:
-                error = str(e)
+                error = "Our agents are currently experiencing high demand. Please wait 30 seconds and try again."
 
     return render_template("index.html",
                            final_report=final_report,
