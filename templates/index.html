@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeReview AI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/one-dark.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/python/python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/javascript/javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #080810;
+            --surface: #0f0f1a;
+            --border: #1e1e2e;
+            --text: #e2e2e8;
+            --muted: #6b6b80;
+            --accent: #7c6af7;
+            --accent-glow: rgba(124, 106, 247, 0.15);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* NAV */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            backdrop-filter: blur(12px);
+            background: rgba(8, 8, 16, 0.8);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-logo {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            letter-spacing: -0.3px;
+        }
+
+        .nav-logo span { color: var(--accent); }
+
+        .google-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: var(--muted);
+            border: 1px solid var(--border);
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        /* HERO */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+            position: relative;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(124, 106, 247, 0.08) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.78rem;
+            color: var(--accent);
+            border: 1px solid rgba(124, 106, 247, 0.3);
+            background: rgba(124, 106, 247, 0.08);
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.2s forwards;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -2px;
+            color: #fff;
+            max-width: 800px;
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.4s forwards;
+        }
+
+        .accent { color: var(--accent); }
+
+        .typewriter-cursor {
+            border-right: 2px solid var(--accent);
+            animation: blink 0.8s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { border-color: var(--accent); }
+            50% { border-color: transparent; }
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--muted);
+            max-width: 520px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.6s forwards;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 0.8s forwards;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--accent);
+            color: #fff;
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 14px 28px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .hero-cta:hover {
+            background: #6a58e0;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 30px rgba(124, 106, 247, 0.3);
+        }
+
+        .google-strip {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeUp 0.6s ease 1s forwards;
+            margin-top: 32px;
+        }
+
+        .google-strip span { font-size: 0.75rem; color: var(--muted); }
+        .g-pill { width: 24px; height: 4px; border-radius: 2px; }
+
+        /* AGENTS */
+        .agents-section {
+            padding: 100px 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section-label {
+            font-size: 0.78rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: clamp(1.8rem, 3vw, 2.5rem);
+            font-weight: 700;
+            letter-spacing: -1px;
+            text-align: center;
+            color: #fff;
+            margin-bottom: 60px;
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .agent-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .agent-card.visible { opacity: 1; transform: translateY(0); }
+
+        .agent-card:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 30px var(--accent-glow);
+        }
+
+        .agent-icon { font-size: 1.8rem; margin-bottom: 16px; }
+
+        .agent-card h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+
+        .agent-card p {
+            font-size: 0.84rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .agent-tag {
+            display: inline-block;
+            font-size: 0.72rem;
+            padding: 3px 10px;
+            border-radius: 20px;
+            margin-top: 16px;
+            font-weight: 500;
+        }
+
+        .tag-red { background: rgba(234, 67, 53, 0.1); color: #EA4335; }
+        .tag-yellow { background: rgba(251, 188, 5, 0.1); color: #FBBC05; }
+        .tag-green { background: rgba(52, 168, 83, 0.1); color: #34A853; }
+        .tag-blue { background: rgba(66, 133, 244, 0.1); color: #4285F4; }
+
+        /* TOOL */
+        .tool-section {
+            padding: 80px 40px 120px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .tool-box {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 40px;
+        }
+
+        .tool-box h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .tool-desc {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .mode-toggle {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .mode-label { font-size: 0.82rem; color: var(--muted); }
+
+        .toggle-wrap {
+            display: flex;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 3px;
+        }
+
+        .toggle-btn {
+            font-size: 0.78rem;
+            padding: 5px 14px;
+            border-radius: 6px;
+            border: none;
+            background: transparent;
+            color: var(--muted);
+            cursor: default;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn.active { background: var(--accent); color: #fff; }
+
+        /* CodeMirror dark fix */
+        .CodeMirror {
+            height: 220px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            transition: border-color 0.2s;
+            background: #0d0d16 !important;
+            .CodeMirror, .CodeMirror-scroll {
+    color: #e0e0e0 !important;
+            }
+        .CodeMirror-cursor {
+    border-left: 2px solid #7c6af7 !important;
+            }
+        }
+
+        .CodeMirror-focused { border-color: var(--accent) !important; }
+        .CodeMirror-scroll { border-radius: 12px; }
+        .CodeMirror-gutters { background: #0d0d16 !important; border-right: 1px solid var(--border) !important; }
+
+        .submit-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            margin-top: 16px;
+            padding: 14px;
+            background: var(--accent);
+            color: white;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            border-radius: 10px;
+            cursor: default;
+            transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #6a58e0;
+            box-shadow: 0 8px 30px rgba(124, 106, 247, 0.3);
+        }
+
+        .submit-btn:disabled { opacity: 0.5; }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 20px;
+            color: var(--muted);
+            font-size: 0.88rem;
+        }
+
+        .loading-dot { display: inline-block; animation: pulse 1.4s infinite; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+
+        /* Error card */
+        .error-card {
+            background: rgba(234, 67, 53, 0.08);
+            border: 1px solid rgba(234, 67, 53, 0.3);
+            border-radius: 16px;
+            padding: 24px;
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .error-card .error-icon { font-size: 2rem; margin-bottom: 12px; }
+
+        .error-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #EA4335;
+            margin-bottom: 8px;
+        }
+
+        .error-card p {
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* REPORTS */
+        .reports { margin-top: 40px; }
+
+        .final-card {
+            background: var(--bg);
+            border: 1px solid var(--accent);
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 16px;
+            box-shadow: 0 0 40px var(--accent-glow);
+        }
+
+        .final-card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .fixed-card {
+            background: var(--bg);
+            border: 1px solid #34A853;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 0 40px rgba(52, 168, 83, 0.1);
+        }
+
+        .fixed-card h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #34A853;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .collapsible-btn {
+            width: 100%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 14px 20px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: default;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+            text-align: left;
+            margin-bottom: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .collapsible-btn:hover { border-color: var(--accent); }
+
+        .collapsible-content {
+            display: none;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 12px;
+        }
+
+        .collapsible-content.open { display: block; }
+
+        /* Markdown */
+        .md-content h1, .md-content h2, .md-content h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #fff;
+            margin: 16px 0 8px 0;
+        }
+
+        .md-content p {
+            font-size: 0.88rem;
+            color: #aaa;
+            line-height: 1.75;
+            margin-bottom: 10px;
+        }
+
+        .md-content strong { color: #fff; }
+
+        .md-content ol, .md-content ul {
+            padding-left: 20px;
+            margin-bottom: 12px;
+        }
+
+        .md-content li {
+            font-size: 0.88rem;
+            color: #aaa;
+            line-height: 1.75;
+            margin-bottom: 6px;
+        }
+
+        .md-content pre {
+            margin: 12px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            position: relative;
+        }
+
+        .md-content pre code {
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            border-radius: 10px;
+            padding: 16px !important;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: block;
+        }
+
+        .md-content code:not(pre code) {
+            font-family: 'Courier New', monospace;
+            font-size: 0.82rem;
+            color: #a78bfa;
+            background: rgba(124, 106, 247, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .md-content hr {
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 16px 0;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: rgba(124, 106, 247, 0.2);
+            border: 1px solid rgba(124, 106, 247, 0.3);
+            color: #a78bfa;
+            font-size: 0.72rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: default;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+            z-index: 10;
+        }
+
+        .copy-btn:hover { background: rgba(124, 106, 247, 0.4); color: #fff; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: var(--muted);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 8px;
+            font-size: 0.75rem;
+        }
+
+        #hidden-code { display: none; }
+        #hidden-mode { display: none; }
+    </style>
+</head>
+<body>
+
+
+
+    <!-- NAV -->
+    <nav>
+        <div class="nav-logo">Code<span>Review</span> AI</div>
+        <div class="google-badge">
+            <svg width="16" height="16" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="geminiGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#1AA260"/>
+                        <stop offset="35%" style="stop-color:#4285F4"/>
+                        <stop offset="65%" style="stop-color:#EA4335"/>
+                        <stop offset="100%" style="stop-color:#FBBC05"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#geminiGrad)" d="M50 5 C50 5 55 40 95 50 C55 60 50 95 50 95 C50 95 45 60 5 50 C45 40 50 5 50 5Z"/>
+            </svg>
+            Powered by Gemini
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="hero-badge">✦ Multi-Agent AI System</div>
+        <h1>Find your bugs<br><span class="accent"><span id="typewriter"></span><span class="typewriter-cursor"> </span></span></h1>
+        <p>Four specialized AI agents review your code for security vulnerabilities, logic errors, readability, and performance synthesized into one actionable report.</p>
+        <div class="hero-buttons">
+            <a href="#tool" class="hero-cta">Try it now</a>
+        </div>
+        <div class="google-strip">
+            <span>Built with</span>
+            <svg width="20" height="20" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="geminiGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#1AA260"/>
+                        <stop offset="35%" style="stop-color:#4285F4"/>
+                        <stop offset="65%" style="stop-color:#EA4335"/>
+                        <stop offset="100%" style="stop-color:#FBBC05"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#geminiGrad2)" d="M50 5 C50 5 55 40 95 50 C55 60 50 95 50 95 C50 95 45 60 5 50 C45 40 50 5 50 5Z"/>
+            </svg>
+            <span style="color:#fff;">Google Gemini</span>
+        </div>
+    </section>
+
+    <!-- AGENTS -->
+    <section class="agents-section">
+        <p class="section-label">How it works</p>
+        <h2 class="section-title">Four agents. One verdict.</h2>
+        <div class="agents-grid">
+            <div class="agent-card">
+                <div class="agent-icon">🔒</div>
+                <h3>Security Agent</h3>
+                <p>Detects SQL injection, exposed secrets, unsafe input handling, and authentication flaws.</p>
+                <span class="agent-tag tag-red">Security</span>
+            </div>
+            <div class="agent-card">
+                <div class="agent-icon">✅</div>
+                <h3>Correctness Agent</h3>
+                <p>Finds logic errors, unhandled edge cases, null references, and off-by-one mistakes.</p>
+                <span class="agent-tag tag-yellow">Logic & Bugs</span>
+            </div>
+            <div class="agent-card">
+                <div class="agent-icon">📖</div>
+                <h3>Readability Agent</h3>
+                <p>Reviews naming, structure, comments, and code clarity for long-term maintainability.</p>
+                <span class="agent-tag tag-green">Code Quality</span>
+            </div>
+            <div class="agent-card">
+                <div class="agent-icon">⚡</div>
+                <h3>Performance Agent</h3>
+                <p>Identifies slow algorithms, memory waste, inefficient queries, and optimization opportunities.</p>
+                <span class="agent-tag tag-blue">Performance</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- TOOL -->
+    <section class="tool-section" id="tool">
+        <div class="tool-box">
+            <h2>Review your code</h2>
+            <p class="tool-desc">Paste any code below and our four agents will analyze it in seconds.</p>
+
+            <div class="mode-toggle">
+                <span class="mode-label">Explanation mode:</span>
+                <div class="toggle-wrap">
+                    <button class="toggle-btn active" id="btn-simple" onclick="setMode('simple')">Simple</button>
+                    <button class="toggle-btn" id="btn-advanced" onclick="setMode('advanced')">Advanced</button>
+                </div>
+            </div>
+
+            <form method="POST" id="review-form">
+                <textarea id="code-editor">{{ code or '' }}</textarea>
+                <input type="hidden" name="code" id="hidden-code">
+                <input type="hidden" name="mode" id="hidden-mode" value="simple">
+
+                <button type="submit" class="submit-btn" id="submit-btn">
+                    Review My Code
+                </button>
+                <div class="loading" id="loading">
+                    <span class="loading-dot">●</span>
+                    <span class="loading-dot">●</span>
+                    <span class="loading-dot">●</span>
+                    &nbsp; Four agents analyzing your code... this may take 30–40 seconds.
+                </div>
+            </form>
+
+            {% if error %}
+<div class="error-card">
+    <div class="error-icon">☕</div>
+    <h3>Our agents are taking a coffee break</h3>
+    <p>{{ error }}</p>
+</div>
+{% endif %}
+
+            {% if final_report %}
+            <div class="reports">
+                <div class="final-card">
+                    <h2>⭐ Final Report</h2>
+                    <div class="md-content" id="final-md"></div>
+                </div>
+
+                <div class="fixed-card">
+                    <h2>✅ Fixed Code</h2>
+                    <div class="md-content" id="fixed-md"></div>
+                </div>
+
+                <p style="font-size:0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Individual Agent Reports</p>
+
+                <button class="collapsible-btn" onclick="toggle('sec')">
+                    🔒 Security Agent <span id="arr-sec">▼</span>
+                </button>
+                <div class="collapsible-content" id="sec">
+                    <div class="md-content" id="sec-md"></div>
+                </div>
+
+                <button class="collapsible-btn" onclick="toggle('cor')">
+                    ✅ Correctness Agent <span id="arr-cor">▼</span>
+                </buttonfun>
+                <div class="collapsible-content" id="cor">
+                    <div class="md-content" id="cor-md"></div>
+                </div>
+
+                <button class="collapsible-btn" onclick="toggle('read')">
+                    📖 Readability Agent <span id="arr-read">▼</span>
+                </button>
+                <div class="collapsible-content" id="read">
+                    <div class="md-content" id="read-md"></div>
+                </div>
+
+                <button class="collapsible-btn" onclick="toggle('perf')">
+                    ⚡ Performance Agent <span id="arr-perf">▼</span>
+                </button>
+                <div class="collapsible-content" id="perf">
+                    <div class="md-content" id="perf-md"></div>
+                </div>
+            </div>
+
+           <script>
+    const finalReport = {{ final_report | tojson }};
+    const fixedCode = {{ fixed_code | tojson }};
+    const secReport = {{ security_report | tojson }};
+    const corReport = {{ correctness_report | tojson }};
+    const readReport = {{ readability_report | tojson }};
+    const perfReport = {{ performance_report | tojson }};
+
+    function renderMd(id, text) {
+    const el = document.getElementById(id);
+    if (!el || !text) return;
+    el.innerHTML = text;
+    el.querySelectorAll('pre').forEach(pre => {
+        const code = pre.querySelector('code');
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+
+        const btn = document.createElement('button');
+        btn.className = 'copy-btn';
+        btn.textContent = 'Copy';
+        btn.onclick = () => {
+            navigator.clipboard.writeText(code ? code.innerText : pre.innerText);
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = 'Copy', 2000);
+        };
+        wrapper.appendChild(btn);
+    });
+}
+
+    renderMd('final-md', finalReport);
+    renderMd('fixed-md', fixedCode);
+    renderMd('sec-md', secReport);
+    renderMd('cor-md', corReport);
+    renderMd('read-md', readReport);
+    renderMd('perf-md', perfReport);
+
+    function toggle(id) {
+        const content = document.getElementById(id);
+        const arrow = document.getElementById('arr-' + id);
+        content.classList.toggle('open');
+        arrow.textContent = content.classList.contains('open') ? '▲' : '▼';
+    }
+</script>
+            {% endif %}
+        </div>
+    </section>
+
+    <footer>
+        <div>Built with Gemini AI · Four specialized agents · One actionable report</div>
+        <div class="footer-google">
+            <svg width="12" height="12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="geminiGrad3" x1="0%" y1="100%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#1AA260"/>
+                        <stop offset="35%" style="stop-color:#4285F4"/>
+                        <stop offset="65%" style="stop-color:#EA4335"/>
+                        <stop offset="100%" style="stop-color:#FBBC05"/>
+                    </linearGradient>
+                </defs>
+                <path fill="url(#geminiGrad3)" d="M50 5 C50 5 55 40 95 50 C55 60 50 95 50 95 C50 95 45 60 5 50 C45 40 50 5 50 5Z"/>
+            </svg>
+            Google Gemini API
+        </div>
+    </footer>
+
+    <script>
+     
+
+        // CodeMirror
+        const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
+            mode: 'python',
+            theme: 'one-dark',
+            lineNumbers: true,
+            indentUnit: 4,
+            tabSize: 4,
+            lineWrapping: true,
+            autofocus: false,
+        });
+
+        // Auto detect language
+        editor.on('change', function() {
+            const code = editor.getValue();
+            if (code.includes('def ') || (code.includes('import ') && !code.includes('function'))) {
+                editor.setOption('mode', 'python');
+            } else if (code.includes('function') || code.includes('const ') || code.includes('let ')) {
+                editor.setOption('mode', 'javascript');
+            } else if (code.includes('public class') || code.includes('void ')) {
+                editor.setOption('mode', 'text/x-java');
+            }
+        });
+
+        // Mode toggle
+        let currentMode = 'simple';
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('hidden-mode').value = mode;
+            document.getElementById('btn-simple').classList.toggle('active', mode === 'simple');
+            document.getElementById('btn-advanced').classList.toggle('active', mode === 'advanced');
+        }
+
+        // Form submit
+        document.getElementById('review-form').addEventListener('submit', function(e) {
+            const code = editor.getValue().trim();
+            if (!code) { e.preventDefault(); return; }
+            document.getElementById('hidden-code').value = code;
+            document.getElementById('hidden-mode').value = currentMode;
+
+            const btn = document.getElementById('submit-btn');
+            const loading = document.getElementById('loading');
+            btn.disabled = true;
+            btn.style.opacity = '0';
+            btn.style.transition = 'opacity 0.4s';
+            setTimeout(() => { btn.style.display = 'none'; }, 400);
+            loading.style.display = 'block';
+        });
+
+        // Typewriter
+        const phrases = ["while making coffee.", "before it ships.", "in seconds."];
+        let pi = 0, ci = 0, deleting = false;
+        const el = document.getElementById('typewriter');
+
+        function type() {
+            const current = phrases[pi];
+            if (!deleting) {
+                el.textContent = current.slice(0, ++ci);
+                if (ci === current.length) { deleting = true; setTimeout(type, 2000); return; }
+            } else {
+                el.textContent = current.slice(0, --ci);
+                if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; }
+            }
+            setTimeout(type, deleting ? 40 : 80);
+        }
+        type();
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((e, i) => {
+                if (e.isIntersecting) {
+                    setTimeout(() => e.target.classList.add('visible'), i * 100);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.agent-card').forEach(c => observer.observe(c));
+    </script>
+
+</body>
+</html>

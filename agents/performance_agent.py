@@ -1,21 +1,21 @@
-def run_readability_agent(code: str, client, mode: str = "simple") -> str:
+def run_performance_agent(code: str, client, mode: str = "simple") -> str:
     if mode == "simple":
         style = """Use plain English. Short sentences. Avoid technical jargon.
 Explain issues like you're talking to someone who builds things at home as a hobby.
 Keep each explanation under 3 sentences."""
     else:
-        style = """Use precise technical language. Reference design patterns and principles like SOLID, DRY, and clean code.
+        style = """Use precise technical language. Reference Big O notation, memory complexity, and optimization patterns.
 Target audience is senior software engineers who want deep analysis."""
 
-    prompt = f"""You are a code readability and style expert.
-Analyze the following code for readability and maintainability issues.
+    prompt = f"""You are a code performance expert.
+Analyze the following code for performance issues.
 Look for:
-- Poor variable and function naming
-- Missing or inadequate comments
-- Functions that are too long or complex
-- Code duplication
-- Inconsistent formatting or style
-- Hard to understand logic that needs clarification
+- Unnecessary loops or nested loops
+- Inefficient algorithms
+- Memory waste or memory leaks
+- Slow database queries
+- Better data structures that could be used
+- Redundant computations that could be cached
 
 Explanation style: {style}
 
@@ -24,7 +24,7 @@ Code to review:
 
 Format your response exactly like this:
 
-## Readability Review
+## Performance Review
 
 ### Issues Found
 
@@ -37,7 +37,7 @@ Format your response exactly like this:
    only put actual runnable code here, no explanations, no comments, no ... placeholders
 ```
 
-If no issues found, write: "No readability issues found."
+If no issues found, write: "No performance issues found."
 
 Rules:
 - Never use --- as a separator
