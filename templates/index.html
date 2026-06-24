@@ -483,16 +483,21 @@
 
         .collapsible-btn:hover { border-color: var(--accent); }
 
-        .collapsible-content {
-            display: none;
-            background: var(--bg);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 12px;
-        }
+    .collapsible-content {
+        max-height: 0;
+        overflow: hidden;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 12px;
+        transition: max-height 0.4s ease, padding 0.4s ease;
+        padding: 0 24px;
+    }
 
-        .collapsible-content.open { display: block; }
+    .collapsible-content.open {
+        max-height: 5000px;
+        padding: 24px;
+    }
 
         /* Markdown */
         .md-content h1, .md-content h2, .md-content h3 {
@@ -598,6 +603,42 @@
 
         #hidden-code { display: none; }
         #hidden-mode { display: none; }
+       @media print {
+    nav, .hero, .agents-section, form, .mode-toggle, footer, 
+    .copy-btn, .collapsible-btn, .agent-section > button,
+    #export-btn-wrapper, .section-label { 
+        display: none !important; 
+    }
+    body { background: white !important; color: black !important; }
+    .tool-section { padding: 0 !important; max-width: 100% !important; }
+    .tool-box { border: none !important; background: white !important; padding: 0 !important; }
+    .reports { margin-top: 0 !important; }
+    .final-card, .fixed-card { 
+        display: block !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+        background: white !important;
+        margin-bottom: 20px !important;
+        padding: 16px !important;
+    }
+    .final-card h2, .fixed-card h2 { color: #1a1a2e !important; }
+    .collapsible-content { 
+        display: block !important;
+        max-height: none !important;
+        padding: 16px !important;
+        border: 1px solid #ccc !important;
+        background: white !important;
+        margin-bottom: 12px !important;
+    }
+    .md-content p, .md-content li { color: #333 !important; }
+    .md-content h1, .md-content h2, .md-content h3 { color: #1a1a2e !important; }
+    .md-content pre { background: #f5f5f5 !important; border: 1px solid #ddd !important; }
+    .md-content code { color: #333 !important; }
+    .md-content strong { color: #000 !important; }
+    .print-code-section { display: block !important; }
+}
+
+.print-code-section { display: none; }
     </style>
 </head>
 <body>
@@ -699,9 +740,15 @@
                 <input type="hidden" name="code" id="hidden-code">
                 <input type="hidden" name="mode" id="hidden-mode" value="simple">
 
-                <button type="submit" class="submit-btn" id="submit-btn">
-                    Review My Code
-                </button>
+                <input type="hidden" name="action" id="action-input" value="review">
+<div style="display: flex; gap: 12px; margin-top: 16px;">
+    <button type="submit" class="submit-btn" id="submit-btn" style="margin-top: 0;" onclick="setAction('review')">
+        Review My Code
+    </button>
+    <button type="submit" class="submit-btn" id="refactor-btn" style="margin-top: 0; background: #34A853;" onclick="setAction('refactor')">
+        ✨ AI Refactor
+    </button>
+</div>
                 <div class="loading" id="loading">
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
@@ -709,6 +756,42 @@
                     &nbsp; Four agents analyzing your code... this may take 30–40 seconds.
                 </div>
             </form>
+
+            {% if refactor_report %}
+            <div class="reports">
+                <div class="fixed-card" style="margin-top: 24px;">
+                <h2>✨ Refactored Code</h2>
+                <div class="md-content" id="refactor-md"></div>
+            </div>
+        </div>
+
+<script>
+    const refactorReport = {{ refactor_report | tojson }};
+    function renderMdSimple(id, text) {
+        const el = document.getElementById(id);
+        if (!el || !text) return;
+        el.innerHTML = text;
+        el.querySelectorAll('pre').forEach(pre => {
+            const code = pre.querySelector('code');
+            const wrapper = document.createElement('div');
+            wrapper.style.position = 'relative';
+            pre.parentNode.insertBefore(wrapper, pre);
+            wrapper.appendChild(pre);
+            const btn = document.createElement('button');
+            btn.className = 'copy-btn';
+            btn.textContent = 'Copy';
+            btn.onclick = () => {
+                navigator.clipboard.writeText(code ? code.innerText : pre.innerText);
+                btn.textContent = 'Copied!';
+                setTimeout(() => btn.textContent = 'Copy', 2000);
+            };
+            wrapper.appendChild(btn);
+        });
+    }
+    renderMdSimple('refactor-md', refactorReport);
+</script>
+{% endif %}
+
 
             {% if error %}
 <div class="error-card">
@@ -720,6 +803,26 @@
 
             {% if final_report %}
             <div class="reports">
+               <div id="export-btn-wrapper" style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+    <button onclick="exportPDF()" style="
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        font-size: 0.78rem;
+        padding: 6px 14px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-family: Inter, sans-serif;
+        transition: all 0.2s;
+    " onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'"
+       onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--muted)'">
+        ⬇ Export Report
+    </button>
+</div>
+<div class="print-code-section">
+    <h2 style="font-size: 1rem; color: #1a1a2e; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ccc;">📋 Reviewed Code</h2>
+    <pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; font-size: 0.82rem; border: 1px solid #ddd; white-space: pre-wrap;">{{ code }}</pre>
+</div>
                 <div class="final-card">
                     <h2>⭐ Final Report</h2>
                     <div class="md-content" id="final-md"></div>
@@ -800,10 +903,12 @@
     renderMd('perf-md', perfReport);
 
     function toggle(id) {
-        const content = document.getElementById(id);
-        const arrow = document.getElementById('arr-' + id);
-        content.classList.toggle('open');
-        arrow.textContent = content.classList.contains('open') ? '▲' : '▼';
+    const content = document.getElementById(id);
+    const arrow = document.getElementById('arr-' + id);
+    content.classList.toggle('open');
+    arrow.style.transition = 'transform 0.3s ease';
+    arrow.style.display = 'inline-block';
+    arrow.style.transform = content.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
     }
 </script>
             {% endif %}
@@ -864,21 +969,68 @@
         }
 
         // Form submit
-        document.getElementById('review-form').addEventListener('submit', function(e) {
-            const code = editor.getValue().trim();
-            if (!code) { e.preventDefault(); return; }
-            document.getElementById('hidden-code').value = code;
-            document.getElementById('hidden-mode').value = currentMode;
+       function setAction(action) {
+    document.getElementById('action-input').value = action;
+}
+       document.getElementById('review-form').addEventListener('submit', function(e) {
+    const code = editor.getValue().trim();
+    if (!code || code.length < 10) {
+        e.preventDefault();
+        alert('Please paste some code before reviewing!');
+        return;
+    }
 
-            const btn = document.getElementById('submit-btn');
-            const loading = document.getElementById('loading');
-            btn.disabled = true;
-            btn.style.opacity = '0';
-            btn.style.transition = 'opacity 0.4s';
-            setTimeout(() => { btn.style.display = 'none'; }, 400);
-            loading.style.display = 'block';
-        });
+    // Stricter code detection
+const codePatterns = [
+    /def\s+\w+\s*\(/,           // Python function
+    /function\s+\w+\s*\(/,      // JS function
+    /class\s+\w+/,              // class definition
+    /import\s+\w+/,             // import statement
+    /from\s+\w+\s+import/,      // Python import
+    /const\s+\w+\s*=/,          // JS const
+    /let\s+\w+\s*=/,            // JS let
+    /var\s+\w+\s*=/,            // JS var
+    /public\s+\w+\s+\w+\s*\(/, // Java/C# method
+    /\w+\s*\(.*\)\s*{/,        // function with body
+    /for\s*\(.*\)/,             // for loop
+    /while\s*\(.*\)/,           // while loop
+    /if\s*\(.*\)\s*[:{]/,      // if statement with bracket
+    /=>\s*[{(]/,                // arrow function
+    /\w+\s*=\s*\w+\s*\(.*\)/,  // function call assignment
+];
 
+const looksLikeCode = codePatterns.some(pattern => pattern.test(code));
+
+if (!looksLikeCode) {
+    e.preventDefault();
+    alert('That doesn\'t look like code! Please paste a code snippet to review.');
+    return;
+}
+    document.getElementById('hidden-code').value = code;
+    document.getElementById('hidden-mode').value = currentMode;
+
+    const clickedBtn = document.activeElement;
+    const reviewBtn = document.getElementById('submit-btn');
+    const refactorBtn = document.getElementById('refactor-btn');
+    const loading = document.getElementById('loading');
+
+    // Disable both buttons
+    reviewBtn.disabled = true;
+    refactorBtn.disabled = true;
+
+    // Show which one was clicked
+    if (clickedBtn === refactorBtn) {
+        refactorBtn.style.opacity = '1';
+        refactorBtn.textContent = '✨ Refactoring...';
+        reviewBtn.style.opacity = '0.3';
+    } else {
+        reviewBtn.style.opacity = '1';
+        reviewBtn.textContent = 'Reviewing...';
+        refactorBtn.style.opacity = '0.3';
+    }
+
+    loading.style.display = 'block';
+});
         // Typewriter
         const phrases = ["while making coffee.", "before it ships.", "in seconds."];
         let pi = 0, ci = 0, deleting = false;
@@ -907,6 +1059,9 @@
         }, { threshold: 0.1 });
 
         document.querySelectorAll('.agent-card').forEach(c => observer.observe(c));
+        function exportPDF() {
+    window.print();
+}
     </script>
 
 </body>

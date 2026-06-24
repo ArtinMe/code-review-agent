@@ -9,6 +9,7 @@ from agents.security_agent import run_security_agent
 from agents.correctness_agent import run_correctness_agent
 from agents.readability_agent import run_readability_agent
 from agents.performance_agent import run_performance_agent
+from agents.refactor_agent import run_refactor_agent
 from coordinator import run_coordinator
 
 # Load API key
@@ -43,6 +44,7 @@ def index():
     correctness_report = None
     readability_report = None
     performance_report = None
+    refactor_report = None
     code = None
     mode = "simple"
     error = None
@@ -50,24 +52,28 @@ def index():
     if request.method == "POST":
         code = request.form.get("code")
         mode = request.form.get("mode", "simple")
+        action = request.form.get("action", "review")
 
         if code:
             try:
-                security_report = md(call_with_retry(run_security_agent, code, client, mode))
-                correctness_report = md(call_with_retry(run_correctness_agent, code, client, mode))
-                readability_report = md(call_with_retry(run_readability_agent, code, client, mode))
-                performance_report = md(call_with_retry(run_performance_agent, code, client, mode))
-
-                raw_final = call_with_retry(run_coordinator, code, security_report, correctness_report, readability_report, client)
-
-                marker = '## Fixed Code'
-                idx = raw_final.find(marker)
-                if idx != -1:
-                    final_report = md(raw_final[:idx].strip())
-                    fixed_code = md(raw_final[idx + len(marker):].strip())
+                if action == "refactor":
+                    refactor_report = md(call_with_retry(run_refactor_agent, code, client))
                 else:
-                    final_report = md(raw_final)
-                    fixed_code = None
+                    security_report = md(call_with_retry(run_security_agent, code, client, mode))
+                    correctness_report = md(call_with_retry(run_correctness_agent, code, client, mode))
+                    readability_report = md(call_with_retry(run_readability_agent, code, client, mode))
+                    performance_report = md(call_with_retry(run_performance_agent, code, client, mode))
+
+                    raw_final = call_with_retry(run_coordinator, code, security_report, correctness_report, readability_report, client)
+
+                    marker = '## Fixed Code'
+                    idx = raw_final.find(marker)
+                    if idx != -1:
+                        final_report = md(raw_final[:idx].strip())
+                        fixed_code = md(raw_final[idx + len(marker):].strip())
+                    else:
+                        final_report = md(raw_final)
+                        fixed_code = None
 
             except Exception as e:
                 error = "Our agents are currently experiencing high demand. Please wait 30 seconds and try again."
@@ -79,6 +85,7 @@ def index():
                            correctness_report=correctness_report,
                            readability_report=readability_report,
                            performance_report=performance_report,
+                           refactor_report=refactor_report,
                            code=code,
                            mode=mode,
                            error=error)
