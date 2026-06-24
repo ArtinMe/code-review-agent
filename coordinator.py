@@ -21,19 +21,18 @@ Format your response exactly like this:
 
 **Overall Score: X/10**
 
-### Top 3 Critical Issues
+(Be fair and calibrated with the score. Simple code with one bug should score 6-7/10. Only give low scores like 2-3/10 for code with multiple severe issues. Perfect code is 10/10.)
 
-1. **Issue Name** - Category: Security/Correctness/Readability/Performance
+### Issues by Priority
 
-   Short explanation of why this is critical.
+**Critical** (must fix immediately):
+1. Issue name — one sentence explanation.
 
-2. **Issue Name** - Category: Security/Correctness/Readability/Performance
+**Major** (should fix soon):
+1. Issue name — one sentence explanation.
 
-   Short explanation of why this is critical.
-
-3. **Issue Name** - Category: Security/Correctness/Readability/Performance
-
-   Short explanation of why this is critical.
+**Minor** (nice to fix):
+1. Issue name — one sentence explanation.
 
 ### Quick Wins
 
@@ -54,10 +53,11 @@ complete fixed code here
 
 Rules:
 - Never use --- as a separator
-- Code blocks must contain ONLY runnable code, never explanations or comments
+- Be fair and calibrated with scoring
+- Only mark something Critical if it truly is critical
+- Code blocks must contain ONLY runnable code
 - Never use ... or placeholders in code blocks
-- Keep explanations in plain text outside code blocks
-- Use numbers for issues, not bullet points"""
+- Keep explanations in plain text outside code blocks"""
 
     response = client.models.generate_content(
         model="gemini-2.5-flash",

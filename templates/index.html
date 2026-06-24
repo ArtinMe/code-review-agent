@@ -325,27 +325,36 @@
         .toggle-btn.active { background: var(--accent); color: #fff; }
 
         /* CodeMirror dark fix */
-        .CodeMirror {
-            height: 220px;
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            font-family: 'Courier New', monospace;
-            font-size: 0.88rem;
-            line-height: 1.6;
-            transition: border-color 0.2s;
-            background: #0d0d16 !important;
-            .CodeMirror, .CodeMirror-scroll {
+.CodeMirror {
+    height: 220px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    transition: border-color 0.2s;
+    background: #0d0d16 !important;
+}
+
+.CodeMirror, .CodeMirror-scroll {
     color: #e0e0e0 !important;
-            }
-        .CodeMirror-cursor {
+}
+
+.CodeMirror-cursor {
     border-left: 2px solid #7c6af7 !important;
-            }
-        }
+}
 
-        .CodeMirror-focused { border-color: var(--accent) !important; }
-        .CodeMirror-scroll { border-radius: 12px; }
-        .CodeMirror-gutters { background: #0d0d16 !important; border-right: 1px solid var(--border) !important; }
+.CodeMirror-focused { border-color: var(--accent) !important; }
+.CodeMirror-scroll { border-radius: 12px; }
+.CodeMirror-gutters { background: #0d0d16 !important; border-right: 1px solid var(--border) !important; }
 
+.CodeMirror-selected {
+    background: rgba(124, 106, 247, 0.3) !important;
+}
+
+.CodeMirror-focused .CodeMirror-selected {
+    background: rgba(124, 106, 247, 0.4) !important;
+}
         .submit-btn {
             display: flex;
             align-items: center;
@@ -732,7 +741,7 @@
 
                 <button class="collapsible-btn" onclick="toggle('cor')">
                     ✅ Correctness Agent <span id="arr-cor">▼</span>
-                </buttonfun>
+                </button>
                 <div class="collapsible-content" id="cor">
                     <div class="md-content" id="cor-md"></div>
                 </div>
