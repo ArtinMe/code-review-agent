@@ -114,22 +114,29 @@
         }
 
         .hero h1 {
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            font-weight: 700;
-            line-height: 1.1;
-            letter-spacing: -2px;
-            color: #fff;
-            max-width: 800px;
-            margin-bottom: 24px;
-            opacity: 0;
-            animation: fadeUp 0.6s ease 0.4s forwards;
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -2px;
+    color: #fff;
+    max-width: 800px;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 0.6s ease 0.4s forwards;
+    text-align: center;
         }
 
-        .accent { color: var(--accent); }
+      .accent { 
+    color: var(--accent); 
+    white-space: nowrap;
+    display: block;
+    text-align: center;
+    }
 
-        .typewriter-cursor {
-            border-right: 2px solid var(--accent);
-            animation: blink 0.8s infinite;
+       .typewriter-cursor {
+    border-right: 2px solid var(--accent);
+    animation: blink 0.8s infinite;
+    padding-right: 2px;
         }
 
         @keyframes blink {
@@ -214,7 +221,7 @@
 
         .agents-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 16px;
         }
 
@@ -667,8 +674,8 @@
     <!-- HERO -->
     <section class="hero">
         <div class="hero-badge">✦ Multi-Agent AI System</div>
-        <h1>Find your bugs<br><span class="accent"><span id="typewriter"></span><span class="typewriter-cursor"> </span></span></h1>
-        <p>Four specialized AI agents review your code for security vulnerabilities, logic errors, readability, and performance synthesized into one actionable report.</p>
+        <h1>Review your code<br><span class="accent"><span id="typewriter" class="typewriter-cursor"></span></span></h1>
+        <p>Six specialized AI agents review your code for security vulnerabilities, logic errors, readability, performance, and more synthesized into one actionable report.</p>
         <div class="hero-buttons">
             <a href="#tool" class="hero-cta">Try it now</a>
         </div>
@@ -692,7 +699,7 @@
     <!-- AGENTS -->
     <section class="agents-section">
         <p class="section-label">How it works</p>
-        <h2 class="section-title">Four agents. One verdict.</h2>
+        <h2 class="section-title">Six agents. One verdict.</h2>
         <div class="agents-grid">
             <div class="agent-card">
                 <div class="agent-icon">🔒</div>
@@ -717,6 +724,18 @@
                 <h3>Performance Agent</h3>
                 <p>Identifies slow algorithms, memory waste, inefficient queries, and optimization opportunities.</p>
                 <span class="agent-tag tag-blue">Performance</span>
+            </div>
+            <div class="agent-card">
+                <div class="agent-icon">✨</div>
+                <h3>Refactor Agent</h3>
+                <p>Rewrites your code to be cleaner and more maintainable without changing its core functionality.</p>
+                <span class="agent-tag tag-blue">Refactor</span>
+            </div>
+            <div class="agent-card">
+                <div class="agent-icon">⭐</div>
+                <h3>Coordinator Agent</h3>
+                <p>Synthesizes all reports into one prioritized verdict with Critical/Major/Minor classification and a health score.</p>
+                <span class="agent-tag" style="background: rgba(124,106,247,0.1); color: #7c6af7;">Coordinator</span>
             </div>
         </div>
     </section>
@@ -753,7 +772,7 @@
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
-                    &nbsp; <span id="loading-text">Four agents analyzing your code... this may take 30–40 seconds.</span>
+                    &nbsp; <span id="loading-text">Six agents analyzing your code... this may take 30–40 seconds.</span>
                 </div>
             </form>
 
@@ -916,7 +935,7 @@
     </section>
 
     <footer>
-        <div>Built with Gemini AI · Four specialized agents · One actionable report</div>
+        <div>Built with Gemini AI · Six specialized agents · One actionable report</div>
         <div class="footer-google">
             <svg width="12" height="12" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                 <defs>
@@ -1037,7 +1056,7 @@ if (!looksLikeCode) {
         }
 });
         // Typewriter
-        const phrases = ["while making coffee.", "before it ships.", "in seconds."];
+        const phrases = ["like a senior engineer.", "before bugs reach production.", "clean it up instantly.", "in seconds, not hours.", "security, performance & more."];
         let pi = 0, ci = 0, deleting = false;
         const el = document.getElementById('typewriter');
 
