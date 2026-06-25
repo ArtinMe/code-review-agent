@@ -753,7 +753,7 @@
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
-                    &nbsp; Four agents analyzing your code... this may take 30–40 seconds.
+                    &nbsp; <span id="loading-text">Four agents analyzing your code... this may take 30–40 seconds.</span>
                 </div>
             </form>
 
@@ -1029,7 +1029,12 @@ if (!looksLikeCode) {
         refactorBtn.style.opacity = '0.3';
     }
 
-    loading.style.display = 'block';
+        loading.style.display = 'block';
+        if (clickedBtn === refactorBtn) {
+        document.getElementById('loading-text').textContent = 'Refactoring your code... this may take 10–15 seconds.';
+        } else {
+        document.getElementById('loading-text').textContent = 'Four agents analyzing your code... this may take 30–40 seconds.';
+        }
 });
         // Typewriter
         const phrases = ["while making coffee.", "before it ships.", "in seconds."];
