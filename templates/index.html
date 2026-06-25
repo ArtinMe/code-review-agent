@@ -884,6 +884,15 @@
             </div>
 
            <script>
+
+            document.addEventListener('DOMContentLoaded', function() {
+    const reports = document.querySelector('.reports');
+    if (reports) {
+        setTimeout(() => {
+            reports.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 300);
+    }
+});
     const finalReport = {{ final_report | tojson }};
     const fixedCode = {{ fixed_code | tojson }};
     const secReport = {{ security_report | tojson }};
