@@ -64,7 +64,7 @@ def index():
                     readability_report = md(call_with_retry(run_readability_agent, code, client, mode))
                     performance_report = md(call_with_retry(run_performance_agent, code, client, mode))
 
-                    raw_final = call_with_retry(run_coordinator, code, security_report, correctness_report, readability_report, client)
+                    raw_final = call_with_retry(run_coordinator, code, security_report, correctness_report, readability_report, performance_report, client)
 
                     marker = '## Fixed Code'
                     idx = raw_final.find(marker)
@@ -76,7 +76,18 @@ def index():
                         fixed_code = None
 
             except Exception as e:
-                error = "Our agents are currently experiencing high demand. Please wait 30 seconds and try again."
+                print(f"Review failed: {e}")
+                err_str = str(e).lower()
+                if '503' in err_str:
+                    error = "Our agents are currently experiencing high demand. Please wait 30 seconds and try again."
+                elif '429' in err_str or 'quota' in err_str:
+                    error = "We've hit our AI usage limit for the moment. Please try again in a few minutes."
+                elif 'api key' in err_str or '401' in err_str or '403' in err_str or 'permission_denied' in err_str:
+                    error = "Something's misconfigured on our end and we can't reach the AI service right now. We've been notified — please try again later."
+                elif 'timeout' in err_str or 'connection' in err_str:
+                    error = "We couldn't reach the AI service in time. Please check your connection and try again."
+                else:
+                    error = "Something went wrong while reviewing your code. Please try again — if this keeps happening, give us a few more seconds to fix it."
 
     return render_template("index.html",
                            final_report=final_report,

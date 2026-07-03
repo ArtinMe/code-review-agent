@@ -13,6 +13,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/clike/clike.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -23,7 +24,7 @@
             --surface: #0f0f1a;
             --border: #1e1e2e;
             --text: #e2e2e8;
-            --muted: #6b6b80;
+            --muted: #8888a0;
             --accent: #7c6af7;
             --accent-glow: rgba(124, 106, 247, 0.15);
         }
@@ -119,18 +120,25 @@
     line-height: 1.1;
     letter-spacing: -2px;
     color: #fff;
-    max-width: 800px;
+    width: 100%;
+    max-width: 1400px;
     margin-bottom: 24px;
     opacity: 0;
     animation: fadeUp 0.6s ease 0.4s forwards;
     text-align: center;
         }
 
-      .accent { 
-    color: var(--accent); 
+      .accent {
+    color: var(--accent);
     white-space: nowrap;
     display: block;
     text-align: center;
+    }
+
+    @media (max-width: 700px) {
+        .accent {
+            font-size: clamp(1rem, 6vw, 1.8rem);
+        }
     }
 
        .typewriter-cursor {
@@ -324,7 +332,7 @@
             border: none;
             background: transparent;
             color: var(--muted);
-            cursor: default;
+            cursor: pointer;
             font-family: 'Inter', sans-serif;
             transition: all 0.2s;
         }
@@ -376,7 +384,7 @@
             font-weight: 500;
             border: none;
             border-radius: 10px;
-            cursor: default;
+            cursor: pointer;
             transition: all 0.3s;
             font-family: 'Inter', sans-serif;
         }
@@ -386,7 +394,7 @@
             box-shadow: 0 8px 30px rgba(124, 106, 247, 0.3);
         }
 
-        .submit-btn:disabled { opacity: 0.5; }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .loading {
             display: none;
@@ -443,6 +451,9 @@
         }
 
         .final-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             color: var(--accent);
@@ -461,6 +472,9 @@
         }
 
         .fixed-card h2 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             color: #34A853;
@@ -478,7 +492,7 @@
             color: var(--text);
             font-size: 0.9rem;
             font-weight: 500;
-            cursor: default;
+            cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -578,13 +592,24 @@
             font-size: 0.72rem;
             padding: 4px 10px;
             border-radius: 6px;
-            cursor: default;
+            cursor: pointer;
             font-family: 'Inter', sans-serif;
             transition: all 0.2s;
             z-index: 10;
         }
 
         .copy-btn:hover { background: rgba(124, 106, 247, 0.4); color: #fff; }
+
+        /* Keyboard focus states */
+        .hero-cta:focus-visible,
+        .toggle-btn:focus-visible,
+        .submit-btn:focus-visible,
+        .collapsible-btn:focus-visible,
+        .copy-btn:focus-visible,
+        .export-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(16px); }
@@ -673,7 +698,7 @@
 
     <!-- HERO -->
     <section class="hero">
-        <div class="hero-badge">✦ Multi-Agent AI System</div>
+        <div class="hero-badge"><i data-lucide="sparkles" width="14" height="14"></i> Multi-Agent AI System</div>
         <h1>Review your code<br><span class="accent"><span id="typewriter" class="typewriter-cursor"></span></span></h1>
         <p>Six specialized AI agents review your code for security vulnerabilities, logic errors, readability, performance, and more synthesized into one actionable report.</p>
         <div class="hero-buttons">
@@ -702,37 +727,37 @@
         <h2 class="section-title">Six agents. One verdict.</h2>
         <div class="agents-grid">
             <div class="agent-card">
-                <div class="agent-icon">🔒</div>
+                <div class="agent-icon"><i data-lucide="shield" width="28" height="28" style="color:#EA4335"></i></div>
                 <h3>Security Agent</h3>
                 <p>Detects SQL injection, exposed secrets, unsafe input handling, and authentication flaws.</p>
                 <span class="agent-tag tag-red">Security</span>
             </div>
             <div class="agent-card">
-                <div class="agent-icon">✅</div>
+                <div class="agent-icon"><i data-lucide="bug" width="28" height="28" style="color:#FBBC05"></i></div>
                 <h3>Correctness Agent</h3>
                 <p>Finds logic errors, unhandled edge cases, null references, and off-by-one mistakes.</p>
                 <span class="agent-tag tag-yellow">Logic & Bugs</span>
             </div>
             <div class="agent-card">
-                <div class="agent-icon">📖</div>
+                <div class="agent-icon"><i data-lucide="book-open" width="28" height="28" style="color:#34A853"></i></div>
                 <h3>Readability Agent</h3>
                 <p>Reviews naming, structure, comments, and code clarity for long-term maintainability.</p>
                 <span class="agent-tag tag-green">Code Quality</span>
             </div>
             <div class="agent-card">
-                <div class="agent-icon">⚡</div>
+                <div class="agent-icon"><i data-lucide="zap" width="28" height="28" style="color:#4285F4"></i></div>
                 <h3>Performance Agent</h3>
                 <p>Identifies slow algorithms, memory waste, inefficient queries, and optimization opportunities.</p>
                 <span class="agent-tag tag-blue">Performance</span>
             </div>
             <div class="agent-card">
-                <div class="agent-icon">✨</div>
+                <div class="agent-icon"><i data-lucide="sparkles" width="28" height="28" style="color:#4285F4"></i></div>
                 <h3>Refactor Agent</h3>
                 <p>Rewrites your code to be cleaner and more maintainable without changing its core functionality.</p>
                 <span class="agent-tag tag-blue">Refactor</span>
             </div>
             <div class="agent-card">
-                <div class="agent-icon">⭐</div>
+                <div class="agent-icon"><i data-lucide="star" width="28" height="28" style="color:#7c6af7"></i></div>
                 <h3>Coordinator Agent</h3>
                 <p>Synthesizes all reports into one prioritized verdict with Critical/Major/Minor classification and a health score.</p>
                 <span class="agent-tag" style="background: rgba(124,106,247,0.1); color: #7c6af7;">Coordinator</span>
@@ -744,7 +769,7 @@
     <section class="tool-section" id="tool">
         <div class="tool-box">
             <h2>Review your code</h2>
-            <p class="tool-desc">Paste any code below and our four agents will analyze it in seconds.</p>
+            <p class="tool-desc">Paste any code below and our six agents will analyze it in seconds.</p>
 
             <div class="mode-toggle">
                 <span class="mode-label">Explanation mode:</span>
@@ -765,26 +790,34 @@
         Review My Code
     </button>
     <button type="submit" class="submit-btn" id="refactor-btn" style="margin-top: 0; background: #34A853;" onclick="setAction('refactor')">
-        ✨ AI Refactor
+        <i data-lucide="sparkles" width="16" height="16"></i> AI Refactor
     </button>
 </div>
                 <div class="loading" id="loading">
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
                     <span class="loading-dot">●</span>
-                    &nbsp; <span id="loading-text">Six agents analyzing your code... this may take 30–40 seconds.</span>
+                    &nbsp; <span id="loading-text">Six agents analyzing your code... this may take about 2 minutes.</span>
                 </div>
             </form>
 
             {% if refactor_report %}
             <div class="reports">
                 <div class="fixed-card" style="margin-top: 24px;">
-                <h2>✨ Refactored Code</h2>
+                <h2><i data-lucide="sparkles" width="20" height="20"></i> Refactored Code</h2>
                 <div class="md-content" id="refactor-md"></div>
             </div>
         </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const reports = document.querySelector('.reports');
+        if (reports) {
+            setTimeout(() => {
+                reports.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 300);
+        }
+    });
     const refactorReport = {{ refactor_report | tojson }};
     function renderMdSimple(id, text) {
         const el = document.getElementById(id);
@@ -814,7 +847,7 @@
 
             {% if error %}
 <div class="error-card">
-    <div class="error-icon">☕</div>
+    <div class="error-icon"><i data-lucide="coffee" width="32" height="32" style="color:#EA4335"></i></div>
     <h3>Our agents are taking a coffee break</h3>
     <p>{{ error }}</p>
 </div>
@@ -823,7 +856,10 @@
             {% if final_report %}
             <div class="reports">
                <div id="export-btn-wrapper" style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-    <button onclick="exportPDF()" style="
+    <button onclick="exportPDF()" class="export-btn" style="
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
         background: transparent;
         border: 1px solid var(--border);
         color: var(--muted);
@@ -835,48 +871,48 @@
         transition: all 0.2s;
     " onmouseover="this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'"
        onmouseout="this.style.borderColor='var(--border)'; this.style.color='var(--muted)'">
-        ⬇ Export Report
+        <i data-lucide="download" width="14" height="14"></i> Export Report
     </button>
 </div>
 <div class="print-code-section">
-    <h2 style="font-size: 1rem; color: #1a1a2e; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ccc;">📋 Reviewed Code</h2>
+    <h2 style="display: flex; align-items: center; gap: 6px; font-size: 1rem; color: #1a1a2e; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #ccc;"><i data-lucide="clipboard-list" width="16" height="16"></i> Reviewed Code</h2>
     <pre style="background: #f5f5f5; padding: 16px; border-radius: 8px; font-size: 0.82rem; border: 1px solid #ddd; white-space: pre-wrap;">{{ code }}</pre>
 </div>
                 <div class="final-card">
-                    <h2>⭐ Final Report</h2>
+                    <h2><i data-lucide="star" width="20" height="20"></i> Final Report</h2>
                     <div class="md-content" id="final-md"></div>
                 </div>
 
                 <div class="fixed-card">
-                    <h2>✅ Fixed Code</h2>
+                    <h2><i data-lucide="check-circle" width="20" height="20"></i> Fixed Code</h2>
                     <div class="md-content" id="fixed-md"></div>
                 </div>
 
                 <p style="font-size:0.78rem; color: var(--muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 12px;">Individual Agent Reports</p>
 
                 <button class="collapsible-btn" onclick="toggle('sec')">
-                    🔒 Security Agent <span id="arr-sec">▼</span>
+                    <span style="display:flex; align-items:center; gap:8px;"><i data-lucide="shield" width="18" height="18" style="color:#EA4335"></i> Security Agent</span> <span id="arr-sec">▼</span>
                 </button>
                 <div class="collapsible-content" id="sec">
                     <div class="md-content" id="sec-md"></div>
                 </div>
 
                 <button class="collapsible-btn" onclick="toggle('cor')">
-                    ✅ Correctness Agent <span id="arr-cor">▼</span>
+                    <span style="display:flex; align-items:center; gap:8px;"><i data-lucide="bug" width="18" height="18" style="color:#FBBC05"></i> Correctness Agent</span> <span id="arr-cor">▼</span>
                 </button>
                 <div class="collapsible-content" id="cor">
                     <div class="md-content" id="cor-md"></div>
                 </div>
 
                 <button class="collapsible-btn" onclick="toggle('read')">
-                    📖 Readability Agent <span id="arr-read">▼</span>
+                    <span style="display:flex; align-items:center; gap:8px;"><i data-lucide="book-open" width="18" height="18" style="color:#34A853"></i> Readability Agent</span> <span id="arr-read">▼</span>
                 </button>
                 <div class="collapsible-content" id="read">
                     <div class="md-content" id="read-md"></div>
                 </div>
 
                 <button class="collapsible-btn" onclick="toggle('perf')">
-                    ⚡ Performance Agent <span id="arr-perf">▼</span>
+                    <span style="display:flex; align-items:center; gap:8px;"><i data-lucide="zap" width="18" height="18" style="color:#4285F4"></i> Performance Agent</span> <span id="arr-perf">▼</span>
                 </button>
                 <div class="collapsible-content" id="perf">
                     <div class="md-content" id="perf-md"></div>
@@ -962,7 +998,7 @@
     </footer>
 
     <script>
-     
+        lucide.createIcons();
 
         // CodeMirror
         const editor = CodeMirror.fromTextArea(document.getElementById('code-editor'), {
@@ -1049,7 +1085,7 @@ if (!looksLikeCode) {
     // Show which one was clicked
     if (clickedBtn === refactorBtn) {
         refactorBtn.style.opacity = '1';
-        refactorBtn.textContent = '✨ Refactoring...';
+        refactorBtn.textContent = 'Refactoring...';
         reviewBtn.style.opacity = '0.3';
     } else {
         reviewBtn.style.opacity = '1';
@@ -1060,8 +1096,10 @@ if (!looksLikeCode) {
         loading.style.display = 'block';
         if (clickedBtn === refactorBtn) {
         document.getElementById('loading-text').textContent = 'Refactoring your code... this may take 10–15 seconds.';
+        } else if (currentMode === 'advanced') {
+        document.getElementById('loading-text').textContent = 'Six agents performing a deep technical analysis... this may take about 2 minutes.';
         } else {
-        document.getElementById('loading-text').textContent = 'Six agents analyzing your code... this may take 30–40 seconds.';
+        document.getElementById('loading-text').textContent = 'Six agents analyzing your code... this may take about 2 minutes.';
         }
 });
         // Typewriter

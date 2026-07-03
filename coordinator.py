@@ -1,4 +1,4 @@
-def run_coordinator(code: str, security_report: str, correctness_report: str, readability_report: str, client) -> str:
+def run_coordinator(code: str, security_report: str, correctness_report: str, readability_report: str, performance_report: str, client) -> str:
     prompt = f"""You are a senior code review coordinator.
 You have received four specialist reports about the following code.
 Your job is to synthesize them into one clean, prioritized, actionable report.
@@ -14,6 +14,9 @@ CORRECTNESS REPORT:
 
 READABILITY REPORT:
 {readability_report}
+
+PERFORMANCE REPORT:
+{performance_report}
 
 Format your response exactly like this:
 
