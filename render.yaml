@@ -1,0 +1,14 @@
+# Render Blueprint: New > Blueprint, pick this repository, then paste your Gemini key when asked.
+services:
+  - type: web
+    name: codereview-ai
+    runtime: docker
+    plan: free
+    healthCheckPath: /healthz
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false          # entered in the Render dashboard, never committed
+      - key: RATE_LIMIT_PER_MINUTE   # a review and its fix count as two requests
+        value: "6"
+      - key: MAX_REVIEWS_PER_DAY     # requests per day for the whole site
+        value: "200"

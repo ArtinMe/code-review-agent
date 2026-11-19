@@ -1,0 +1,106 @@
+{
+ "fixed_code": "import sqlite3\n\ndef find_orders(db_path, customer):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    cursor.execute(\"SELECT * FROM orders WHERE customer = ?\", (customer,))\n    rows = cursor.fetchall()\n    totals = [row[2] for row in rows]\n    return sum(totals)\n",
+ "changes": [
+  {
+   "finding": "SQL Injection via f-string",
+   "change": "The SQL query was updated to use a parameterized query with a placeholder for the customer variable, preventing SQL injection."
+  },
+  {
+   "finding": "Off-by-one error in loop range",
+   "change": "The loop for collecting totals was refactored into a list comprehension, which implicitly fixes the off-by-one error by iterating directly over the fetched rows."
+  },
+  {
+   "finding": "Inefficient data retrieval and aggregation",
+   "change": "The aggregation was made more Pythonic by using a list comprehension, but the more efficient database-side aggregation could not be implemented without a specific column name for the sum, which the reader should confirm."
+  },
+  {
+   "finding": "Hardcoded column index [2]",
+   "change": "The hardcoded column index `[2]` remains in the code because a specific column name for selection was not available, which the reader should confirm."
+  }
+ ],
+ "diff": [
+  {
+   "op": " ",
+   "old": 1,
+   "new": 1,
+   "text": "import sqlite3"
+  },
+  {
+   "op": " ",
+   "old": 2,
+   "new": 2,
+   "text": ""
+  },
+  {
+   "op": " ",
+   "old": 3,
+   "new": 3,
+   "text": "def find_orders(db_path, customer):"
+  },
+  {
+   "op": " ",
+   "old": 4,
+   "new": 4,
+   "text": "    conn = sqlite3.connect(db_path)"
+  },
+  {
+   "op": " ",
+   "old": 5,
+   "new": 5,
+   "text": "    cursor = conn.cursor()"
+  },
+  {
+   "op": "-",
+   "old": 6,
+   "new": null,
+   "text": "    cursor.execute(f\"SELECT * FROM orders WHERE customer = '{customer}'\")"
+  },
+  {
+   "op": "+",
+   "old": null,
+   "new": 6,
+   "text": "    cursor.execute(\"SELECT * FROM orders WHERE customer = ?\", (customer,))"
+  },
+  {
+   "op": " ",
+   "old": 7,
+   "new": 7,
+   "text": "    rows = cursor.fetchall()"
+  },
+  {
+   "op": "-",
+   "old": 8,
+   "new": null,
+   "text": "    totals = []"
+  },
+  {
+   "op": "-",
+   "old": 9,
+   "new": null,
+   "text": "    for i in range(len(rows) + 1):"
+  },
+  {
+   "op": "-",
+   "old": 10,
+   "new": null,
+   "text": "        totals.append(rows[i][2])"
+  },
+  {
+   "op": "+",
+   "old": null,
+   "new": 8,
+   "text": "    totals = [row[2] for row in rows]"
+  },
+  {
+   "op": " ",
+   "old": 11,
+   "new": 9,
+   "text": "    return sum(totals)"
+  }
+ ],
+ "checks": [
+  "Whole file returned, with no placeholder lines.",
+  "Parses as valid Python."
+ ],
+ "to_confirm": []
+}

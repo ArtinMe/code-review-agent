@@ -1,0 +1,22 @@
+{
+  "model": "gemini-2.5-flash",
+  "cases": 17,
+  "cases_not_run": [],
+  "planted_bugs": 13,
+  "caught": 13,
+  "recall": 1.0,
+  "caught_by_matching_specialist": 13,
+  "recall_by_category": {
+    "correctness": "6/6",
+    "maintainability": "1/1",
+    "performance": "2/2",
+    "security": "4/4"
+  },
+  "clean_files": 4,
+  "clean_files_with_false_positive": 2,
+  "clean_false_positives": 2,
+  "extra_findings_on_buggy_files": 4,
+  "findings_dropped_by_verification": 0,
+  "agent_errors": 0,
+  "missed": []
+}
