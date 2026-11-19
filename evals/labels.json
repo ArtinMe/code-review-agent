@@ -1,0 +1,22 @@
+{
+  "about": "Each case has zero or more planted bugs. A bug is located by the first line containing `match`, so labels survive edits that shift line numbers. Files with no bugs are clean controls: any finding there is a false positive.",
+  "cases": [
+    {"file": "sql_injection.py", "bugs": [{"category": "security", "match": "cursor.execute(f\"SELECT", "note": "user input formatted into SQL"}]},
+    {"file": "hardcoded_secret.py", "bugs": [{"category": "security", "match": "STRIPE_KEY = \"sk_live", "note": "live secret key in source"}]},
+    {"file": "path_traversal.py", "bugs": [{"category": "security", "match": "send_file(os.path.join(UPLOAD_DIR, name))", "note": "../ in the file parameter escapes the upload directory"}]},
+    {"file": "xss_render.js", "bugs": [{"category": "security", "match": "item.innerHTML =", "note": "comment text inserted as HTML"}]},
+    {"file": "off_by_one.py", "bugs": [{"category": "correctness", "match": "range(len(values) - window + 2)", "note": "last window is short, average is wrong"}]},
+    {"file": "none_deref.py", "bugs": [{"category": "correctness", "match": "return user[\"plan\"].upper()", "note": "unknown username gives None, then TypeError"}]},
+    {"file": "mutable_default.py", "bugs": [{"category": "correctness", "match": "tags: list = []", "note": "default list shared across calls"}]},
+    {"file": "identity_compare.py", "bugs": [{"category": "correctness", "match": "if code is \"active\":", "note": "identity comparison with a string is unreliable"}]},
+    {"file": "race_counter.py", "bugs": [{"category": "correctness", "match": "visits += 1", "note": "unsynchronised read-modify-write across threads"}]},
+    {"file": "async_foreach.js", "bugs": [{"category": "correctness", "match": "records.forEach(async", "note": "forEach does not await; returns 0 before inserts finish"}]},
+    {"file": "n_plus_one.py", "bugs": [{"category": "performance", "match": "orders = db.query(", "note": "one query per customer"}]},
+    {"file": "quadratic_dedupe.py", "bugs": [{"category": "performance", "match": "if email not in seen:", "note": "membership test on a list inside a loop is O(n^2)"}]},
+    {"file": "swallowed_error.py", "bugs": [{"category": "maintainability", "match": "except:", "note": "bare except hides malformed settings files"}]},
+    {"file": "clean_slugify.py", "bugs": []},
+    {"file": "clean_bank.py", "bugs": []},
+    {"file": "clean_queries.py", "bugs": [], "note": "trap: the f-string only interpolates '?' placeholders, values are parameterised"},
+    {"file": "clean_debounce.js", "bugs": []}
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "score": 2.1,
+  "partial": false,
+  "files_reviewed": 1,
+  "lines_reviewed": 11,
+  "seconds": 0.0,
+  "findings": [
+    {
+      "file": "orders.py",
+      "line_start": 6,
+      "line_end": 6,
+      "severity": "critical",
+      "title": "SQL Injection via f-string",
+      "explanation": "The 'customer' variable is directly interpolated into the SQL query using an f-string. This allows an attacker to inject malicious SQL code by providing specially crafted input, leading to unauthorized data access, modification, or bypass of intended logic.",
+      "suggestion": "Use parameterized queries to safely pass user input to the database. For example: 'cursor.execute(\"SELECT * FROM orders WHERE customer = ?\", (customer,))'.",
+      "confidence": 1.0,
+      "agents": [
+        "correctness",
+        "maintainability",
+        "security"
+      ],
+      "quote": "cursor.execute(f\"SELECT * FROM orders WHERE customer = '{customer}'\")",
+      "reanchored": false
+    },
+    {
+      "file": "orders.py",
+      "line_start": 9,
+      "line_end": 10,
+      "severity": "critical",
+      "title": "Off-by-one error in loop range",
+      "explanation": "The loop iterates from `0` up to `len(rows)` (inclusive), attempting to access `rows[len(rows)]`. Since list indices are `0` to `len(rows) - 1`, this will cause an `IndexError` when `i` equals `len(rows)`, leading to a program crash.",
+      "suggestion": "The loop should iterate only up to `len(rows) - 1`. Change `range(len(rows) + 1)` to `range(len(rows))`. A more Pythonic approach would be `totals = [row[2] for row in rows]`.",
+      "confidence": 1.0,
+      "agents": [
+        "correctness",
+        "maintainability",
+        "performance"
+      ],
+      "quote": "for i in range(len(rows) + 1):",
+      "reanchored": false
+    },
+    {
+      "file": "orders.py",
+      "line_start": 6,
+      "line_end": 11,
+      "severity": "major",
+      "title": "Inefficient data retrieval and aggregation",
+      "explanation": "The code fetches all columns and all rows into memory (`SELECT *`, `fetchall()`) and then manually sums a specific column in Python. For large datasets, this is inefficient as the database can perform the aggregation much faster and with less memory overhead.",
+      "suggestion": "Replace the entire block with a single SQL query that aggregates the sum directly in the database. For example, `cursor.execute(\"SELECT SUM(column_name) FROM orders WHERE customer = ?\", (customer,))` (assuming column 2 is `column_name`) and then `return cursor.fetchone()[0]`. This also correctly uses parameterized queries.",
+      "confidence": 1.0,
+      "agents": [
+        "performance"
+      ],
+      "quote": "cursor.execute(f\"SELECT * FROM orders WHERE customer = '{customer}'\")\n    rows = cursor.fetchall()\n    totals = []\n    for i in range(len(rows) + 1):\n        totals.append(rows[i][2])\n    return sum(totals)",
+      "reanchored": false
+    },
+    {
+      "file": "orders.py",
+      "line_start": 10,
+      "line_end": 10,
+      "severity": "minor",
+      "title": "Hardcoded column index [2]",
+      "explanation": "The code accesses 'rows[i][2]', assuming that the third column (index 2) always contains the desired total. This makes the code brittle and prone to 'IndexError' if the 'SELECT *' query returns fewer than three columns or if the order of columns in the 'orders' table changes.",
+      "suggestion": "Instead of 'SELECT *', explicitly select the column containing the total (e.g., 'SELECT order_total FROM orders...') and access it by name or its known index (e.g., 'row[0]' if 'order_total' is the only selected column).",
+      "confidence": 0.8,
+      "agents": [
+        "maintainability"
+      ],
+      "quote": "totals.append(rows[i][2])",
+      "reanchored": false
+    }
+  ],
+  "agents": [
+    {
+      "agent": "security",
+      "findings_returned": 1,
+      "seconds": 0.0,
+      "error": null,
+      "cached": true
+    },
+    {
+      "agent": "correctness",
+      "findings_returned": 2,
+      "seconds": 0.0,
+      "error": null,
+      "cached": true
+    },
+    {
+      "agent": "performance",
+      "findings_returned": 2,
+      "seconds": 0.0,
+      "error": null,
+      "cached": true
+    },
+    {
+      "agent": "maintainability",
+      "findings_returned": 3,
+      "seconds": 0.0,
+      "error": null,
+      "cached": true
+    }
+  ],
+  "stats": {
+    "kept": 4,
+    "reanchored": 0,
+    "dropped_ungrounded": 0,
+    "dropped_out_of_scope": 0,
+    "dropped_low_confidence": 0,
+    "merged_duplicates": 4
+  },
+  "dropped": []
+}
